@@ -1,0 +1,18 @@
+
+
+<div>{{> infoPetition}}</div>
+
+ <form action="/" method="POST">
+            <input id="first" name="first" required placeholder="First Name" />
+            <input id="last" name="last" required placeholder="Last Name" />
+            <!-- same for last name -->
+
+            <!-- placeholder for the signature, before implementing the actual canvas thing use draw to method for the signature -->
+            <input
+                type="hidden"
+                name="signature"
+                value="data:image/png;base64,hello"
+            />
+
+            <input type="submit" value="Add Your Name" />
+        </form>

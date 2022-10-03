@@ -1,5 +1,16 @@
 <div>{{> infoPetition}}</div>
 
-<p>So here we are. This is going to be successful!</p>
+<p>So here we are. This is going to be successful! Here is a digital sticker for you.</p>
+
+{{!-- <p>{{signatures}}</p> --}}
+<ul>
+    {{#signatures}}
+        <li>
+                <p>{{first}} {{last}} {{signature}}</p>
+        </li>
+    {{/signatures}}
+</ul>
+
+<img src="{{directory}}/pizza.jpg" alt="sticker" width="150px" height="150px">
 
 {{!-- get the signatures from the database --}}

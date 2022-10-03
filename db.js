@@ -25,7 +25,7 @@ module.exports.getAllUser = function () {
 
 module.exports.createUser = function (first, last, signature) {
     const sql = `
-        INSERT INTO cities (first, last, signature)
+        INSERT INTO petition (first, last, signature)
         VALUES ($1, $2, $3)
         RETURNING *;
     `;

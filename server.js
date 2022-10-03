@@ -20,36 +20,16 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
-// // Cookie middleware
-// function cookieCheck(req, res, next) {
-//     if (req.cookies.COOKIES_ACCEPTED) {
-//         console.log("Yes, we have a cookie 🍪");
-//         next();
-//     } else if (req.url !== "/cookie" && req.url !== "/favicon.ico") {
-//         res.cookie("REDIRECT_URL", req.url);
-//         res.redirect("/cookie");
-//     } else {
-//         next();
-//     }
-// }
-
-// app.use(cookieCheck);
-
 app.use(express.static("./public")); // gets the hb css
 
-// Example of how to use the db object to select some rows:
-// db.getAllCities().then((rows) => {
-//     console.log("Here are all the cities");
-//     console.log(rows);
-// });
-
-// ....
+let errorMessage;
 
 app.get("/", (req, res) => {
     // console.log("Hey there!");
-    if (req.body.first == "" && req.body.last == "") {
+    if (!req.cookies.PETITION_SIGNED) {
         res.render("home", {
             title: "Petition",
+            errorMessage,
         });
     } else {
         res.redirect("/thank-you");
@@ -62,19 +42,46 @@ app.get("/", (req, res) => {
 });
 
 app.post("/", (req, res) => {
+    if (req.body.first.length > 0 && req.body.last.length > 0) {
+        // TODO: check if signature
+        // TODO: store input data in database
+        db.createUser(req.body.first, req.body.last, "to be continued").then(
+            () => {
+                res.cookie("PETITION_SIGNED", true);
+                res.redirect("/thank-you");
+            }
+        );
+    } else if (req.body.first.length == 0) {
+        // TODO: Regex
+        errorMessage = "Please insert your first name";
+        res.redirect("/");
+    } else if (req.body.last.length == 0) {
+        // TODO: Regex
+        errorMessage = "Please insert your last name";
+        res.redirect("/");
+    }
+
     // check input: first, last names, signature
     // if they are VALID:
     //     STORE in database db.createUser?
-    //     SET a cookie 
+    //     SET a cookie
     //     REDIRECT to thank-you page
     // else:
     //     show the form again with an error message
 });
 
 app.get("/thank-you", (req, res) => {
-    res.render("thank-you", {
-        title: "Petition",
-    });
+    if (req.cookies.PETITION_SIGNED) {
+        db.getAllUser().then((rows) => {
+            console.log(rows);
+            res.render("thank-you", {
+                title: "Petition",
+                signatureCount: rows.length,
+            });
+        });
+    } else {
+        res.redirect("/");
+    }
 
     // if user has signed:
     //     Get data from db
@@ -84,9 +91,17 @@ app.get("/thank-you", (req, res) => {
 });
 
 app.get("/signature", (req, res) => {
-    res.render("signature", {
-        title: "Petition",
-    });
+    if (req.cookies.PETITION_SIGNED) {
+        db.getAllUser().then((rows) => {
+            console.log(rows);
+            res.render("signature", {
+                title: "Petition",
+                signatures: rows,
+            });
+        });
+    } else {
+        res.redirect("/");
+    }
     // if user has signed:
     //     Get data from db
     //     Show info: all previous signatures

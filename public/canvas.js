@@ -1,47 +1,50 @@
-(function () {
-    var canvas = document.getElementById("signature");
-    var ctx = canvas.getContext("2d");
-    ctx.strokeStyle = "#222222";
-    ctx.lineWidth = 4;
+const canvas = document.querySelector("canvas");
+const form = document.querySelector("form");
+const ctx = canvas.getContext("2d");
+const hiddenInput = document.getElementById("hiddenInput");
 
-    var drawing = false;
-    var mousePos = {
-        x: 0,
-        y: 0,
-    };
-    var lastPos = mousePos;
+let drawing = false;
 
-    canvas.addEventListener(
-        "mousedown",
-        function (e) {
-            drawing = true;
-            lastPos = getMousePos(canvas, e);
-        },
-        false
-    );
+const handlePointerDown = (event) => {
+    drawing = true;
+    ctx.beginPath();
+    const [positionX, positionY] = getCursorPosition(event);
+    ctx.moveTo(positionX, positionY);
+};
 
-    canvas.addEventListener(
-        "mouseup",
-        function (e) {
-            drawing = false;
-        },
-        false
-    );
+const handlePointerUp = () => {
+    drawing = false;
+    hiddenInput.value = canvas.toDataURL();
+};
 
-    canvas.addEventListener(
-        "mousemove",
-        function (e) {
-            mousePos = getMousePos(canvas, e);
-        },
-        false
-    );
+const handlePointerMove = (event) => {
+    if (!drawing) return;
+    const [positionX, positionY] = getCursorPosition(event);
+    ctx.lineTo(positionX, positionY);
+    ctx.stroke();
+};
 
-    function renderCanvas() {
-        if (drawing) {
-            ctx.moveTo(lastPos.x, lastPos.y);
-            ctx.lineTo(mousePos.x, mousePos.y);
-            ctx.stroke();
-            lastPos = mousePos;
-        }
-    }
+const getCursorPosition = (event) => {
+    positionX = event.clientX - event.target.getBoundingClientRect().x;
+    positionY = event.clientY - event.target.getBoundingClientRect().y;
+    return [positionX, positionY];
+};
+canvas.addEventListener("mousedown", handlePointerDown, { passive: true });
+canvas.addEventListener("mouseup", handlePointerUp, { passive: true });
+canvas.addEventListener("mousemove", handlePointerMove, { passive: true });
+
+// ctx.lineWidth = 2;
+// ctx.lineJoin = ctx.lineCap = "round";
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const imageURL = canvas.toDataURL();
+    const image = document.createElement("img");
+    image.src = imageURL;
+    image.height = canvas.height;
+    image.width = canvas.width;
+    clearPad();
 });
+const clearPad = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+};

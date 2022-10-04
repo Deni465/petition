@@ -7,13 +7,15 @@
             <input id="last" name="last"  type="name" required placeholder="Last Name" />
             <!-- same for last name -->
             <p>{{errorMessage}}</p>
-            <!-- placeholder for the signature, before implementing the actual canvas thing /use draw to method for the signature -->
+            {{!-- <!-- placeholder for the signature, before implementing the actual canvas thing /use draw to method for the signature --> --}}
             <input
+                id="hiddenInput"
                 type="hidden"
                 name="signature"
                 value="data:image/png;base64,hello"
             />
-            <canvas id="signature">Sign here</canvas>
+            <div><canvas id="signature" height="200px" width="400px">Sign here</canvas></div>
+           
 
             <input type="submit" value="Add Your Name" />
 </form>

@@ -47,17 +47,19 @@ app.get("/", (req, res) => {
 });
 
 app.post("/", (req, res) => {
-    if (req.body.first.length > 0 && req.body.last.length > 0) {
+    if (
+        req.body.first.length > 0 &&
+        req.body.last.length > 0 &&
+        req.body.signature.length > 0
+    ) {
         // TODO: check if signature
         // TODO: store input data in database
-        db.createUser(
-            req.body.first,
-            req.body.last,
-            "imagine a signature here"
-        ).then((data) => {
-            req.session.id = data[0].id;
-            res.redirect("/thank-you");
-        });
+        db.createUser(req.body.first, req.body.last, req.body.signature).then(
+            (data) => {
+                req.session.id = data[0].id;
+                res.redirect("/thank-you");
+            }
+        );
     } else if (req.body.first.length == 0) {
         // TODO: Regex
         errorMessage = "Please insert your first name";

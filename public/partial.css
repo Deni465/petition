@@ -13,8 +13,6 @@ body {
             0 20,
         progress;
     background-color: bisque;
-    width: 500px;
-    height: 200px;
     border-radius: 15px;
     border: 3px rgb(0, 163, 163) solid;
 }

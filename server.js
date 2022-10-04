@@ -1,7 +1,8 @@
 const db = require("./db");
 const express = require("express");
-const cookieParser = require("cookie-parser");
+// const cookieParser = require("cookie-parser");
 const path = require("path");
+const cookieSession = require("cookie-session");
 
 const { engine } = require("express-handlebars");
 
@@ -17,7 +18,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cookieParser());
+app.use(
+    cookieSession({
+        secret: process.env.SESSION_SECRET,
+        maxAge: 1000 * 60 * 60 * 24 * 14,
+        sameSite: true,
+    })
+);
+
+// app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static("./public")); // gets the hb css
@@ -26,7 +35,8 @@ let errorMessage;
 
 app.get("/", (req, res) => {
     // console.log("Hey there!");
-    if (!req.cookies.PETITION_SIGNED) {
+    if (!req.session.id) {
+        console.log(req.session);
         res.render("home", {
             title: "Petition",
             errorMessage,
@@ -34,23 +44,20 @@ app.get("/", (req, res) => {
     } else {
         res.redirect("/thank-you");
     }
-
-    // if user has NOT signed:
-    //    render the petition page with the form
-    // else
-    //    REDIRECT to thank-you page
 });
 
 app.post("/", (req, res) => {
     if (req.body.first.length > 0 && req.body.last.length > 0) {
         // TODO: check if signature
         // TODO: store input data in database
-        db.createUser(req.body.first, req.body.last, "to be continued").then(
-            () => {
-                res.cookie("PETITION_SIGNED", true);
-                res.redirect("/thank-you");
-            }
-        );
+        db.createUser(
+            req.body.first,
+            req.body.last,
+            "imagine a signature here"
+        ).then((data) => {
+            req.session.id = data[0].id;
+            res.redirect("/thank-you");
+        });
     } else if (req.body.first.length == 0) {
         // TODO: Regex
         errorMessage = "Please insert your first name";
@@ -60,38 +67,26 @@ app.post("/", (req, res) => {
         errorMessage = "Please insert your last name";
         res.redirect("/");
     }
-
-    // check input: first, last names, signature
-    // if they are VALID:
-    //     STORE in database db.createUser?
-    //     SET a cookie
-    //     REDIRECT to thank-you page
-    // else:
-    //     show the form again with an error message
 });
 
 app.get("/thank-you", (req, res) => {
-    if (req.cookies.PETITION_SIGNED) {
-        db.getAllUser().then((rows) => {
-            console.log(rows);
-            res.render("thank-you", {
-                title: "Petition",
-                signatureCount: rows.length,
-            });
-        });
-    } else {
-        res.redirect("/");
-    }
-
-    // if user has signed:
-    //     Get data from db
-    //     Show info: thank you for signing + how many people have signed
-    // else:
-    //     REDIRECT to home/petition page
+    Promise.all([db.getAllUser(), db.getSignature(req.session.id)]).then(
+        (rows) => {
+            if (req.session.id) {
+                res.render("thank-you", {
+                    title: "Petition",
+                    signatureCount: rows[0].length,
+                    signature: rows[0][0].signature,
+                });
+            } else {
+                res.redirect("/");
+            }
+        }
+    );
 });
 
 app.get("/signature", (req, res) => {
-    if (req.cookies.PETITION_SIGNED) {
+    if (req.session.id) {
         db.getAllUser().then((rows) => {
             console.log(rows);
             res.render("signature", {

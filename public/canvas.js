@@ -35,4 +35,13 @@
         },
         false
     );
+
+    function renderCanvas() {
+        if (drawing) {
+            ctx.moveTo(lastPos.x, lastPos.y);
+            ctx.lineTo(mousePos.x, mousePos.y);
+            ctx.stroke();
+            lastPos = mousePos;
+        }
+    }
 });

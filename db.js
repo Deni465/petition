@@ -35,3 +35,15 @@ module.exports.createUser = function (first, last, signature) {
         .then((result) => result.rows)
         .catch((error) => console.log("error inserting user", error));
 };
+
+module.exports.getSignature = (id) => {
+    const sql = "SELECT signature FROM petition WHERE id=$1";
+    return db
+        .query(sql, [id])
+        .then((result) => {
+            return result.rows;
+        })
+        .catch((error) => {
+            console.log("error selecting signature", error);
+        });
+};

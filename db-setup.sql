@@ -1,6 +1,4 @@
 DROP TABLE IF EXISTS signatures;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS profiles;
 
 
 CREATE TABLE signatures (
@@ -9,7 +7,8 @@ CREATE TABLE signatures (
     user_id INT NOT NULL REFERENCES users(id)
 );
 
-CREATE TABLE users (
+DROP TABLE IF EXISTS users CASCADE;
+CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     first VARCHAR(255) NOT NULL CHECK(first != ''),
     last VARCHAR(255) NOT NULL CHECK(last != ''),
@@ -18,6 +17,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS profiles;
 CREATE TABLE profiles(
     age INT,
     city VARCHAR(255),

@@ -38,67 +38,79 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+    console.log("Yes, register page!");
+    res.render("register", {
+        title: "Petition",
+    });
     // TODO: if you're registered show link to /login route
     // else errormessage please register to sign the petition
 });
 
 app.post("/register", (req, res) => {
+    db.createUser(
+        req.body.first,
+        req.body.last,
+        req.body.email,
+        req.body.password
+    )
+        .then((data) => {
+            req.session.id = data[0].id;
+            console.log(req.session);
+
+            res.redirect("/profile");
+        })
+        .catch((err) => {
+            console.log("err in register: ", err);
+            // res.redirect("/register");
+        });
     // TODO: if you click on register button create account in Database
     // and redirect to profile page
     // else errormessage please register to sign the petition or login
 });
 
 app.get("/logout", (req, res) => {
-    // TODO: req.session = 0 and redirect
-    // else back to register/login 
+    req.session = 0;
+    res.redirect("/register");
 });
 
 app.get("/login", (req, res) => {
-    // TODO: insert login data
+    console.log("Yes, login page!");
+
+    res.render("login", {
+        title: "Petition",
+    });
+
+    // TODO: insert login data (email, password)
     // press login button
     // else back to register/login
 });
 
 app.post("/login", (req, res) => {
+    db.auth(req.body.email, req.body.password).then((crypt) => {
+        console.log(crypt);
+        // req.session.id
+        // user_id
+        if (crypt) {
+            res.redirect("/petition");
+        } else {
+            res.render("login", {
+                title: "Petition",
+            });
+        }
+    });
+
     // TODO: get the profile data
     // render petition
     // else back to register/login
 });
 
 app.get("/petition", (req, res) => {
-    if (!req.session.id) {
-        console.log(req.session);
-        res.render("home", {
-            title: "Petition",
-            errorMessage,
-        });
-    } else {
-        res.redirect("/thank-you");
-    }
+    res.render("home", {
+        title: "Petition",
+    });
 });
 
-app.post("/petition", (req, res) => {
-    if (req.body.first.length && req.body.last.length && req.body.signature) {
-        db.createUser(req.body.first, req.body.last, req.body.signature)
-            .then((data) => {
-                req.session.id = data[0].id;
-                res.redirect("/thank-you");
-            })
-            .catch((err) => {
-                console.log("err: ", err);
-                res.render("welcome", {
-                    title: "Petition",
-                });
-            });
-    } else if (!req.body.first || !req.body.last || !req.body.signature) {
-        res.render("home", {
-            title: "Petition",
-            errorMessage: !req.body.first,
-            errorMessage: !req.body.last,
-            errorMessage: !req.body.signature,
-        });
-    }
-});
+app.post("/petition", (req, res) => {});
 
 app.get("/thank-you", (req, res) => {
     Promise.all([db.getAllUser(), db.getSignature(req.session.id)]).then(
@@ -130,18 +142,43 @@ app.get("/signature", (req, res) => {
     }
 });
 
+app.get("/profile", (req, res) => {
+    console.log("Yes, profile is there!");
+    res.render("profile", {
+        title: "Petition",
+    });
+});
 // GET /profile
 // check user should be signed in to get to the profile page
 // check if user has already a profile
 // renders form to input my profile info!
 
+app.post("/profile", (req, res) => {
+    console.log(req.body);
+    db.createProfile(
+        req.body.age,
+        req.body.city,
+        req.body.homePage,
+        req.session.id
+    )
+        .then((data) => {
+            // req.session = { login: true, ...data[0] };
+            // req.session.password = null;
+            res.redirect("/petition");
+        })
+        .catch((err) => {
+            console.log("err in create profile: ", err);
+            // res.redirect("/register");
+        });
+});
+
 // POST /profile
 // validate: age must be a number
 // validate: city must be a text
 // validate: homePage must be a valid URL // must start with https or http
-// save form data into dtatabase
+// save form data into database
 
-// GET /signers/:city //dynamic route!
+// GET /signature/:city //dynamic route!
 // grab the city from the url
 // call function db.getAllSignersByCity(city)
 

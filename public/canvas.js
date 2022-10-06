@@ -43,8 +43,4 @@ form.addEventListener("submit", (event) => {
     image.src = imageURL;
     image.height = canvas.height;
     image.width = canvas.width;
-    clearPad();
 });
-const clearPad = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-};

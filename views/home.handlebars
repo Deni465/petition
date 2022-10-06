@@ -2,11 +2,11 @@
 
 <div>{{> infoPetition}}</div>
 
+          <div><p>{{errorMessage}}</p></div>  
  <form action="/" method="POST">
-            <input id="first" name="first" type="name" required placeholder="First Name" />
-            <input id="last" name="last"  type="name" required placeholder="Last Name" />
+            <input id="first" name="first" type="name" placeholder="First Name" />
+            <input id="last" name="last"  type="name" placeholder="Last Name" />
             <!-- same for last name -->
-            <p>{{errorMessage}}</p>
             {{!-- <!-- placeholder for the signature, before implementing the actual canvas thing /use draw to method for the signature --> --}}
             <input
                 id="hiddenInput"

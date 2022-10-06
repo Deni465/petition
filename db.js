@@ -11,21 +11,15 @@ console.log(db_url);
 const db = spicedPg(db_url);
 
 module.exports.getAllUser = function () {
-    const sql = "SELECT * FROM petition;";
-    // NB! remember to RETURN the promise!
-    return db
-        .query(sql)
-        .then((result) => {
-            return result.rows;
-        })
-        .catch((error) => {
-            console.log("error selecting user", error);
-        });
+    const sql = `SELECT * FROM signatures
+    JOIN users ON signatures.user_id = user.id
+    ORDER BY signatures.id DESC`;
+    return db.query(sql);
 };
 
 module.exports.createUser = function (first, last, signature) {
     const sql = `
-        INSERT INTO petition (first, last, signature)
+        INSERT INTO users (first, last, signature)
         VALUES ($1, $2, $3)
         RETURNING *;
     `;
@@ -47,3 +41,13 @@ module.exports.getSignature = (id) => {
             console.log("error selecting signature", error);
         });
 };
+
+module.exports.insertProfile = (user_id, age, city, homePage) => {
+    //...
+};
+
+module.exports.getAllSignersByCity = (city)=>{
+    //SELECT from 3 tables: profiles, signatures, users
+    //(join them up!)
+    // add the WHERE condition
+}

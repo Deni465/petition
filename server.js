@@ -34,7 +34,38 @@ app.use(express.static("./public")); // gets the hb css
 let errorMessage;
 
 app.get("/", (req, res) => {
-    // console.log("Hey there!");
+    res.redirect("/register");
+});
+
+app.get("/register", (req, res) => {
+    // TODO: if you're registered show link to /login route
+    // else errormessage please register to sign the petition
+});
+
+app.post("/register", (req, res) => {
+    // TODO: if you click on register button create account in Database
+    // and redirect to profile page
+    // else errormessage please register to sign the petition or login
+});
+
+app.get("/logout", (req, res) => {
+    // TODO: req.session = 0 and redirect
+    // else back to register/login 
+});
+
+app.get("/login", (req, res) => {
+    // TODO: insert login data
+    // press login button
+    // else back to register/login
+});
+
+app.post("/login", (req, res) => {
+    // TODO: get the profile data
+    // render petition
+    // else back to register/login
+});
+
+app.get("/petition", (req, res) => {
     if (!req.session.id) {
         console.log(req.session);
         res.render("home", {
@@ -46,28 +77,26 @@ app.get("/", (req, res) => {
     }
 });
 
-app.post("/", (req, res) => {
-    if (
-        req.body.first.length > 0 &&
-        req.body.last.length > 0 &&
-        req.body.signature.length > 0
-    ) {
-        // TODO: check if signature
-        // TODO: store input data in database
-        db.createUser(req.body.first, req.body.last, req.body.signature).then(
-            (data) => {
+app.post("/petition", (req, res) => {
+    if (req.body.first.length && req.body.last.length && req.body.signature) {
+        db.createUser(req.body.first, req.body.last, req.body.signature)
+            .then((data) => {
                 req.session.id = data[0].id;
                 res.redirect("/thank-you");
-            }
-        );
-    } else if (req.body.first.length == 0) {
-        // TODO: Regex
-        errorMessage = "Please insert your first name";
-        res.redirect("/");
-    } else if (req.body.last.length == 0) {
-        // TODO: Regex
-        errorMessage = "Please insert your last name";
-        res.redirect("/");
+            })
+            .catch((err) => {
+                console.log("err: ", err);
+                res.render("welcome", {
+                    title: "Petition",
+                });
+            });
+    } else if (!req.body.first || !req.body.last || !req.body.signature) {
+        res.render("home", {
+            title: "Petition",
+            errorMessage: !req.body.first,
+            errorMessage: !req.body.last,
+            errorMessage: !req.body.signature,
+        });
     }
 });
 
@@ -99,12 +128,22 @@ app.get("/signature", (req, res) => {
     } else {
         res.redirect("/");
     }
-    // if user has signed:
-    //     Get data from db
-    //     Show info: all previous signatures
-    // else:
-    //     REDIRECT to home/petition page
 });
+
+// GET /profile
+// check user should be signed in to get to the profile page
+// check if user has already a profile
+// renders form to input my profile info!
+
+// POST /profile
+// validate: age must be a number
+// validate: city must be a text
+// validate: homePage must be a valid URL // must start with https or http
+// save form data into dtatabase
+
+// GET /signers/:city //dynamic route!
+// grab the city from the url
+// call function db.getAllSignersByCity(city)
 
 ///////////////////////////////////
 

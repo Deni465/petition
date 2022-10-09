@@ -36,11 +36,11 @@ canvas.addEventListener("mousemove", handlePointerMove, { passive: true });
 // ctx.lineWidth = 2;
 // ctx.lineJoin = ctx.lineCap = "round";
 
-form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const imageURL = canvas.toDataURL();
-    const image = document.createElement("img");
-    image.src = imageURL;
-    image.height = canvas.height;
-    image.width = canvas.width;
-});
+// form.addEventListener("submit", (event) => {
+//     const imageURL = canvas.toDataURL();
+//     const image = document.createElement("img");
+//     image.src = imageURL;
+//     image.height = canvas.height;
+//     image.width = canvas.width;
+//     form.appendChild(image);
+// });

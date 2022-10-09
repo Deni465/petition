@@ -22,5 +22,5 @@ CREATE TABLE profiles(
     age INT,
     city VARCHAR(255),
     homepage VARCHAR(255),
-    user_id INT NOT NULL REFERENCES users(id)
+    user_id INT NOT NULL UNIQUE REFERENCES users(id)
 )

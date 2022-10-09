@@ -11,10 +11,13 @@ console.log(db_url);
 const db = spicedPg(db_url);
 
 module.exports.getAllUser = function () {
-    const sql = `SELECT * FROM signatures
-    JOIN users ON signatures.user_id = user.id
-    ORDER BY signatures.id DESC`;
-    return db.query(sql);
+    const sql = `SELECT * FROM profiles
+    JOIN users ON profiles.user_id = users.id
+    ORDER BY profiles.user_id DESC;`;
+    return db
+        .query(sql)
+        .then((result) => result.rows)
+        .catch((error) => console.log("error in getting user", error));
 };
 
 module.exports.getUserByEmail = function (email) {
@@ -27,7 +30,7 @@ module.exports.auth = function (email, password) {
         return bcrypt
             .compare(password, result.rows[0].password)
             .then((crypt) => {
-                return crypt;
+                return { crypt, user: result.rows[0] };
             });
     });
 };
@@ -52,10 +55,34 @@ module.exports.createUser = function (first, last, email, password) {
         });
 };
 
+module.exports.createSignature = (signature, user_id) => {
+    const sql = `
+    INSERT INTO signatures (signature, user_id)
+    VALUES ($1, $2)
+    Returning id;
+    `;
+    return db
+        .query(sql, [signature, user_id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("error inserting signature", error));
+};
+
 module.exports.getSignature = (id) => {
     const sql = "SELECT signature FROM signatures WHERE id=$1";
     return db
         .query(sql, [id])
+        .then((result) => {
+            return result.rows;
+        })
+        .catch((error) => {
+            console.log("error selecting signature", error);
+        });
+};
+
+module.exports.getAllSignatures = () => {
+    const sql = "SELECT * FROM signatures";
+    return db
+        .query(sql)
         .then((result) => {
             return result.rows;
         })
@@ -78,7 +105,7 @@ module.exports.createProfile = (age, city, homepage, user_id) => {
 
 module.exports.getAllSignersByCity = (city) => {
     const sql =
-        "SELECT city FROM profiles JOIN users ON profiles.user_id = users.id JOIN signatures ON profiles.user_id = signatures.user_id WHERE city=$2";
+        "SELECT * FROM profiles JOIN users ON profiles.user_id = users.id WHERE city=$1;";
     return db
         .query(sql, [city])
         .then((result) => {
@@ -90,4 +117,38 @@ module.exports.getAllSignersByCity = (city) => {
     //SELECT from 3 tables: profiles, signatures, users
     //(join them up!)
     // add the WHERE condition
+};
+
+module.exports.getUserInfo = (id) => {
+    // select - joining users & users profile tables
+    // first, last, email
+    // age, city, url
+};
+
+module.exports.updateUserDataWithPassword = (
+    first,
+    last,
+    email,
+    password,
+    user_id
+) => {
+    // Update users...
+};
+
+module.exports.updateUserDataWithoutPassword = (
+    first,
+    last,
+    email,
+    user_id
+) => {};
+
+module.exports.upsertUserProfileData = (age, city, url, user_id) => {
+    const sql = `Insert into tablename(age, city, url)
+    values (42, berlin, youtube)
+    on conflict (name)
+    do update set age = 43, url = facebook;`;
+};
+
+module.exports.deleteSignature = (user_id) => {
+    // delete
 };

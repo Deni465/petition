@@ -6,13 +6,13 @@
     {{#usersInfo}}
     <form class="editForm" action="/profile/edit" method="POST">
         <label for="first">First Name</label>
-        <input id="first" name="first" type="name" value="{{first}}" placeholder="First Name" />
+        <input required id="first" name="first" type="name" value="{{first}}" placeholder="First Name" />
         
         <label for="last">Last Name</label>
-        <input  value="{{last}}" id="last" name="last" type="name" placeholder="Last Name" />
+        <input  required value="{{last}}" id="last" name="last" type="name" placeholder="Last Name" />
         
         <label for="email">E-Mail</label>
-        <input  value="{{email}}" id="email" name="email" type="email" placeholder="E-Mail" />
+        <input  required value="{{email}}" id="email" name="email" type="email" placeholder="E-Mail" />
         
         <label for="password">Password</label>
         <input

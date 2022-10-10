@@ -26,6 +26,15 @@ function isLoggedIn(req, res, next) {
     }
 }
 
+function petitionSigned(req, res, next) {
+    return db.getSignature(req.session.signatureId).then((result) => {
+        if (result.rowCount === 0) {
+            return res.redirect("/petition");
+        }
+        next();
+    });
+}
+
 app.use(
     cookieSession({
         secret: process.env.SESSION_SECRET,
@@ -38,8 +47,6 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static("./public")); // gets the hb css
-
-let errorMessage;
 
 app.get("/", (req, res) => {
     res.redirect("/register");
@@ -116,7 +123,7 @@ app.get("/logout", isLoggedIn, (req, res) => {
     res.redirect("/register");
 });
 
-app.get("/profile", isLoggedIn, (req, res) => {
+app.get("/profile", isLoggedIn, petitionSigned, (req, res) => {
     console.log("Yes, profile is there!");
     res.render("profile", {
         title: "Petition",
@@ -127,7 +134,7 @@ app.get("/profile", isLoggedIn, (req, res) => {
 // check if user has already a profile
 // renders form to input my profile info!
 
-app.post("/profile", isLoggedIn, (req, res) => {
+app.post("/profile", isLoggedIn, petitionSigned, (req, res) => {
     console.log(req.body);
     db.createProfile(
         req.body.age,
@@ -175,7 +182,7 @@ app.post("/petition", isLoggedIn, (req, res) => {
     // TODO: safe signature img in database
 });
 
-app.get("/thank-you", isLoggedIn, (req, res) => {
+app.get("/thank-you", isLoggedIn, petitionSigned, (req, res) => {
     db.getAllSignatures().then((rows) => {
         console.log(rows);
         const newSig = rows.find((row) => row.id === req.session.signatureId);
@@ -191,7 +198,7 @@ app.get("/thank-you", isLoggedIn, (req, res) => {
     });
 });
 
-app.get("/signature", isLoggedIn, (req, res) => {
+app.get("/signature", isLoggedIn, petitionSigned, (req, res) => {
     db.getAllUser().then((rows) => {
         console.log(rows);
         res.render("signature", {
@@ -230,29 +237,52 @@ app.get("/profile/edit", isLoggedIn, (req, res) => {
     //render template: profile-edit
 });
 
-// app.post("/profile/edit", (req, res) => {
-//     // validation: user must be signed in
-//     // validation: mandatory fields must be filled in -
-//     // fist, last, email - mailo should not be in use
-//     // optional fields: validate as in the post profile route
-//     // pasword?
-//     // if validation fails render with error
-//     // update tables:
-//     // users table -
-//     //  if password is given update first, last, email, password
-//     //  else update first, last, email
-//     // user profiles table -
-//     // "UPSERT" user data into the table
-//     // redirect to petition page
-// });
+app.post("/profile/edit", isLoggedIn, (req, res) => {
+    if (password) {
+        userUpdatePromise = db.updateUserWithPassword();
+    } else {
+        userUpdatePromise = db.updateUserWithoutPassword();
+    }
 
-// app.post("/signature/delete", (req, res) => {
-//     // validation: user signed in, (user has signed)
-//     // db.delete...
-//     // remove 'signed' from session!
-//     // redirect to the petition route
-//     // Partial! - HB shown button but is input in form, method post -> type submit, class button action, value delete signature
-// });
+    userUpdatePromise
+        .then(() => {
+            return db.upsertUserProfileData();
+        })
+        .then(() => {
+            res.redirect("/petition");
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
+// validation: user must be signed in
+// validation: mandatory fields must be filled in -
+// fist, last, email - mailo should not be in use
+// optional fields: validate as in the post profile route
+// pasword?
+// if validation fails render with error
+// update tables:
+// users table -
+
+// Redirect to petition page
+
+//  if password is given update first, last, email, password
+//  else update first, last, email
+// user profiles table -
+// "UPSERT" user data into the table
+// redirect to petition page
+
+app.post("/signature/delete", isLoggedIn, (req, res) => {
+    db.deleteSignature(req.session.signature).then((rows) => {
+        res.redirect("/petition");
+        console.log();
+    });
+});
+// validation: user signed in, (user has signed)
+// db.delete...
+// remove 'signed' from session!
+// redirect to the petition route
+// Partial! - HB shown button but is input in form, method post -> type submit, class button action, value delete signature
 
 ///////////////////////////////////
 

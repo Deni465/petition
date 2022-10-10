@@ -175,14 +175,13 @@ module.exports.upsertUserProfileData = (age, city, homepage, user_id) => {
     DO UPDATE set age=$1, city=$2,homepage=$3
     WHERE user_id = $4;`;
     return db.query(sql, [age, city, homepage, user_id]);
-    // const sql = `Insert into tablename(age, city, url)
-    // values (42, berlin, youtube)
-    // on conflict (name)
-    // do update set age = 43, url = facebook;`;
 };
 
 module.exports.deleteSignature = (user_id) => {
-    const sql = `DELETE FROM signatures WHERE signature.user_id = $1;`;
-    return db.query(sql, [user_id]);
+    const sql = `DELETE FROM signatures WHERE signatures.user_id = $1;`;
+    return db
+        .query(sql, [user_id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("error deleting signature", error));
     // delete
 };

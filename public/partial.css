@@ -23,8 +23,8 @@ h1 {
     font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
     letter-spacing: 20px;
     font-size: 7vw;
-    -webkit-text-fill-color: black;
-    opacity: 50%;
+    -webkit-text-fill-color: rgb(38, 51, 111);
+    opacity: 80%;
 }
 
 p {
@@ -46,7 +46,8 @@ ul {
     cursor: url(https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/32/Pencil-icon.png)
             0 20,
         progress;
-    background-color: bisque;
+
+    background: radial-gradient(white 0%, #758bb88e 100%);
     border-radius: 15px;
-    border: 3px rgb(0, 163, 163) solid;
+    border: 3px rgb(38, 51, 111) solid;
 }

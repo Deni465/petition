@@ -11,9 +11,9 @@ console.log(db_url);
 const db = spicedPg(db_url);
 
 module.exports.getAllUser = function () {
-    const sql = `SELECT * FROM profiles
-    JOIN users ON profiles.user_id = users.id
-    ORDER BY profiles.user_id DESC;`;
+    const sql = `SELECT * FROM users
+    LEFT OUTER JOIN profiles ON users.id = profiles.user_id
+    ORDER BY users.id DESC;`;
     return db
         .query(sql)
         .then((result) => result.rows)
@@ -120,6 +120,16 @@ module.exports.getAllSignersByCity = (city) => {
 };
 
 module.exports.getUserInfo = (id) => {
+    // console.log("First id", id);
+    const sql =
+        "SELECT * FROM users LEFT JOIN profiles ON profiles.user_id = users.id WHERE users.id = $1;";
+    return db
+        .query(sql, [id])
+        .then((result) => {
+            console.log("db result", result);
+            return result.rows;
+        })
+        .catch((error) => console.log("error in getting user info", error));
     // select - joining users & users profile tables
     // first, last, email
     // age, city, url
@@ -132,6 +142,17 @@ module.exports.updateUserDataWithPassword = (
     password,
     user_id
 ) => {
+    return bcrypt
+        .genSalt()
+        .then((salt) => {
+            return bcrypt.hash(password, salt);
+        })
+        .then((hashedPassword) => {
+            const sql = `UPDATE users
+            SET first=$1, last=$2, email=$3, password=$4 
+            WHERE id = $5;`;
+            return db.query(sql, [first, last, email, hashedPassword, user_id]);
+        });
     // Update users...
 };
 
@@ -140,15 +161,28 @@ module.exports.updateUserDataWithoutPassword = (
     last,
     email,
     user_id
-) => {};
+) => {
+    const sql = `UPDATE users
+    SET first=$1, last=$2, email=$3
+    WHERE id = $4;`;
+    return db.query(sql, [first, last, email, user_id]);
+};
 
-module.exports.upsertUserProfileData = (age, city, url, user_id) => {
-    const sql = `Insert into tablename(age, city, url)
-    values (42, berlin, youtube)
-    on conflict (name)
-    do update set age = 43, url = facebook;`;
+module.exports.upsertUserProfileData = (age, city, homepage, user_id) => {
+    const sql = `INSERT INTO profiles(age, city, homepage, user_id)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE set age=$1, city=$2,homepage=$3
+    WHERE user_id = $4;`;
+    return db.query(sql, [age, city, homepage, user_id]);
+    // const sql = `Insert into tablename(age, city, url)
+    // values (42, berlin, youtube)
+    // on conflict (name)
+    // do update set age = 43, url = facebook;`;
 };
 
 module.exports.deleteSignature = (user_id) => {
+    const sql = `DELETE FROM signatures WHERE signature.user_id = $1;`;
+    return db.query(sql, [user_id]);
     // delete
 };

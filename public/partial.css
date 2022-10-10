@@ -5,7 +5,41 @@
 }
 
 body {
-    background-color: rgba(127, 255, 212, 0.354);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(
+        ellipse at bottom,
+        rgb(169, 198, 233) 0%,
+        rgb(38, 51, 111) 100%
+    );
+    /* overflow: hidden; */
+    color: white;
+}
+
+h1 {
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    letter-spacing: 20px;
+    font-size: 7vw;
+    -webkit-text-fill-color: black;
+    opacity: 50%;
+}
+
+p {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
+
+.editForm {
+    display: flex;
+    flex-direction: column;
+}
+
+ul {
+    list-style: none;
 }
 
 #signature {

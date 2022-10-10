@@ -1,0 +1,40 @@
+<div>
+    {{> infoPetition}}
+</div>
+
+<div>
+    {{#usersInfo}}
+    <form class="editForm" action="/profile/edit" method="POST">
+        <label for="first">First Name</label>
+        <input id="first" name="first" type="name" value="{{first}}" placeholder="First Name" />
+        
+        <label for="last">Last Name</label>
+        <input  value="{{last}}" id="last" name="last" type="name" placeholder="Last Name" />
+        
+        <label for="email">E-Mail</label>
+        <input  value="{{email}}" id="email" name="email" type="email" placeholder="E-Mail" />
+        
+        <label for="password">Password</label>
+        <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+        />
+        <label for="age">Age</label>
+        <input  value="{{age}}" type="number" placeholder="Your Age" id="age" name="age" />
+       
+        <label for="city">City</label>
+        <input  value="{{city}}" type="text" id="city" placeholder="Your City" name="city" />
+       
+        <label for="homePage" >Homepage</label>
+        <input  value="{{homepage}}" type="url" id="homePage" placeholder="http / https" name="homePage" />
+
+        <input type="button" value="Submit">
+    </form>
+     {{/usersInfo}}
+</div>
+
+<p id="error-box"></p>
+
+<script src="./validation.js"></script>

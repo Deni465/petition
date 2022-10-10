@@ -201,7 +201,7 @@ app.get("/signature", isLoggedIn, (req, res) => {
     });
 });
 
-app.get("/signature/:city", (req, res) => {
+app.get("/signature/:city", isLoggedIn, (req, res) => {
     db.getAllSignersByCity(req.params.city).then((rows) => {
         console.log(rows);
         res.render("signaturePerCity", {
@@ -214,12 +214,21 @@ app.get("/signature/:city", (req, res) => {
 // grab the city from the url
 // call function db.getAllSignersByCity(city)
 
-// app.get("/profile/edit", (req, res) => {
-//     // validation: user must be logged in session.id
-//     // getAllUserInfo
-//     // use this info to pass to handlebars
-//     //render template: profile-edit
-// });
+app.get("/profile/edit", isLoggedIn, (req, res) => {
+    db.getUserInfo(req.session.id).then((rows) => {
+        console.log("Result info user", rows);
+        // console.log("YAY, edit works");
+        res.render("profileEdit", {
+            title: "Edit your profile",
+            usersInfo: rows[0],
+        });
+    });
+
+    // validation: user must be logged in session.id
+    // getAllUserInfo
+    // use this info to pass to handlebars
+    //render template: profile-edit
+});
 
 // app.post("/profile/edit", (req, res) => {
 //     // validation: user must be signed in

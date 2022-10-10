@@ -13,6 +13,7 @@ const db = spicedPg(db_url);
 module.exports.getAllUser = function () {
     const sql = `SELECT * FROM users
     LEFT OUTER JOIN profiles ON users.id = profiles.user_id
+    JOIN signatures ON signatures.user_id = users.id
     ORDER BY users.id DESC;`;
     return db
         .query(sql)
@@ -172,13 +173,13 @@ module.exports.upsertUserProfileData = (age, city, homepage, user_id) => {
     const sql = `INSERT INTO profiles(age, city, homepage, user_id)
     VALUES ($1, $2, $3, $4)
     ON CONFLICT (user_id)
-    DO UPDATE set age=$1, city=$2,homepage=$3
-    WHERE user_id = $4;`;
+    DO UPDATE set age=$1, city=$2, homepage=$3
+    WHERE profiles.user_id = $4;`;
     return db.query(sql, [age, city, homepage, user_id]);
 };
 
 module.exports.deleteSignature = (user_id) => {
-    const sql = `DELETE FROM signatures WHERE signatures.user_id = $1;`;
+    const sql = `DELETE FROM signatures WHERE signatures.id = $1;`;
     return db
         .query(sql, [user_id])
         .then((result) => result.rows)

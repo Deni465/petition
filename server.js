@@ -72,7 +72,6 @@ app.post("/register", (req, res) => {
             req.session.id = data[0].id;
             req.session.first = data[0].first;
             req.session.last = data[0].last;
-            console.log(req.session);
 
             res.redirect("/profile");
         })
@@ -139,7 +138,7 @@ app.post("/profile", isLoggedIn, petitionSigned, (req, res) => {
     db.createProfile(
         req.body.age,
         req.body.city,
-        req.body.homePage,
+        req.body.homepage,
         req.session.id
     )
         .then((data) => {
@@ -154,7 +153,7 @@ app.post("/profile", isLoggedIn, petitionSigned, (req, res) => {
 // POST /profile
 // validate: age must be a number
 // validate: city must be a text
-// validate: homePage must be a valid URL // must start with https or http
+// validate: homepage must be a valid URL // must start with https or http
 // save form data into database
 
 app.get("/petition", isLoggedIn, (req, res) => {
@@ -186,14 +185,14 @@ app.get("/thank-you", isLoggedIn, petitionSigned, (req, res) => {
     db.getAllSignatures().then((rows) => {
         console.log(rows);
         const newSig = rows.find((row) => row.id === req.session.signatureId);
-        if (req.session.id) {
+        if (newSig) {
             res.render("thank-you", {
                 title: "Petition",
                 signatureCount: rows.length,
                 signature: newSig.signature,
             });
         } else {
-            res.redirect("/");
+            res.redirect("/petition");
         }
     });
 });
@@ -238,18 +237,37 @@ app.get("/profile/edit", isLoggedIn, (req, res) => {
 });
 
 app.post("/profile/edit", isLoggedIn, (req, res) => {
+    const { first, last, email, password, age, city, homepage } = req.body;
+    let userUpdatePromise;
     if (password) {
-        userUpdatePromise = db.updateUserWithPassword();
+        userUpdatePromise = db.updateUserDataWithPassword(
+            first,
+            last,
+            email,
+            password,
+            req.session.id
+        );
     } else {
-        userUpdatePromise = db.updateUserWithoutPassword();
+        userUpdatePromise = db.updateUserDataWithoutPassword(
+            first,
+            last,
+            email,
+            req.session.id
+        );
     }
 
     userUpdatePromise
         .then(() => {
-            return db.upsertUserProfileData();
+            console.log("1");
+            return db.upsertUserProfileData(
+                age,
+                city,
+                homepage,
+                req.session.id
+            );
         })
         .then(() => {
-            res.redirect("/petition");
+            res.redirect("/profile/edit");
         })
         .catch((err) => {
             console.log(err);
@@ -273,7 +291,7 @@ app.post("/profile/edit", isLoggedIn, (req, res) => {
 // redirect to petition page
 
 app.post("/signature/delete", isLoggedIn, (req, res) => {
-    db.deleteSignature(req.session.signature).then((rows) => {
+    db.deleteSignature(req.session.signatureId).then((rows) => {
         res.redirect("/petition");
         console.log();
     });

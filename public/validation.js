@@ -1,4 +1,4 @@
-const homepageInput = document.getElementById("homePage");
+const homepageInput = document.getElementById("homepage");
 const cityInput = document.getElementById("city");
 const errorBox = document.getElementById("error-box");
 

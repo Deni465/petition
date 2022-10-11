@@ -316,4 +316,4 @@ app.post("/signature/delete", isLoggedIn, (req, res) => {
 
 ///////////////////////////////////
 
-app.listen(8080, () => console.log("Server listening."));
+app.listen(process.env.PORT || 8080, () => console.log("Server listening."));

@@ -2,10 +2,12 @@
     {{> infoPetition}}
 </div>
 
+<p id="error-box" style="color: red;"></p>
+
 <div>
     <form action="" method="POST">
-        <input id="email" name="email" type="email" placeholder="E-Mail"/>
-        <input id="password" name="password"  type="password" placeholder="Password"/>
+        <input required id="email" name="email" type="email" placeholder="E-Mail"/>
+        <input required id="password" name="password"  type="password" placeholder="Password"/>
         <input type="submit" value="Login"/>
     </form>
 </div>

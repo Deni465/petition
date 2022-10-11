@@ -2,6 +2,7 @@ const canvas = document.querySelector("canvas");
 const form = document.querySelector("form");
 const ctx = canvas.getContext("2d");
 const hiddenInput = document.getElementById("hiddenInput");
+const clearButton = document.getElementsByClassName(".clear");
 
 let drawing = false;
 
@@ -32,6 +33,7 @@ const getCursorPosition = (event) => {
 canvas.addEventListener("mousedown", handlePointerDown, { passive: true });
 canvas.addEventListener("mouseup", handlePointerUp, { passive: true });
 canvas.addEventListener("mousemove", handlePointerMove, { passive: true });
+
 
 // ctx.lineWidth = 2;
 // ctx.lineJoin = ctx.lineCap = "round";

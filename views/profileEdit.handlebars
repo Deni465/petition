@@ -2,16 +2,18 @@
     {{> infoPetition}}
 </div>
 
+<p id="error-box" style="color: red;"></p>
+
 <div>
     {{#usersInfo}}
     <form class="editForm" action="/profile/edit" method="POST">
-        <label for="first">First Name</label>
+        <label for="first">First Name*</label>
         <input required id="first" name="first" type="name" value="{{first}}" placeholder="First Name" />
         
-        <label for="last">Last Name</label>
+        <label for="last">Last Name*</label>
         <input  required value="{{last}}" id="last" name="last" type="name" placeholder="Last Name" />
         
-        <label for="email">E-Mail</label>
+        <label for="email">E-Mail*</label>
         <input  required value="{{email}}" id="email" name="email" type="email" placeholder="E-Mail" />
         
         <label for="password">Password</label>
@@ -38,4 +40,4 @@
 
 <p id="error-box"></p>
 
-<script src="./validation.js"></script>
+<script src="/validation.js"></script>

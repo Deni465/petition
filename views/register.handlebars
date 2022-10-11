@@ -1,11 +1,13 @@
 <div>{{> infoPetition}}</div>
 
+<p id="error-box" style="color: red;"></p>
+
 <div>
     <form action="/register" method="POST">
-        <input id="first" name="first" type="name" placeholder="First Name"/>
-        <input id="last" name="last"  type="name" placeholder="Last Name"/>
-        <input id="email" name="email" type="email" placeholder="E-Mail"/>
-        <input id="password" name="password"  type="password" placeholder="Password"/>
+        <input required id="first" name="first" type="text" placeholder="First Name"/>
+        <input required id="last" name="last"  type="text" placeholder="Last Name"/>
+        <input required id="email" name="email" type="email" placeholder="E-Mail"/>
+        <input required id="password" name="password"  type="password" placeholder="Password"/>
         <input type="submit" value="Create your account"/>
     </form>
 </div>

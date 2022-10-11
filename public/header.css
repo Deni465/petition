@@ -1,0 +1,184 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* background: radial-gradient(
+        ellipse at bottom,
+        rgb(169, 198, 233) 0%,
+        rgb(38, 51, 111) 100%
+    );
+    color: white; */
+    background: linear-gradient(45deg, green, transparent),
+        linear-gradient(-45deg, blue, transparent),
+        linear-gradient(90deg, rgb(252, 252, 62), transparent),
+        linear-gradient(-90deg, coral, transparent);
+    background-blend-mode: screen;
+}
+
+h1 {
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    letter-spacing: 20px;
+    font-size: 7vw;
+    /* -webkit-text-fill-color: rgb(38, 51, 111); */
+    color: rgb(38, 51, 111);
+    opacity: 80%;
+}
+
+img {
+    margin: 20px;
+}
+
+.regOrLog {
+    margin: 10px;
+    font-size: 17px;
+}
+
+.btn {
+    text-decoration: none;
+    font-family: "Times New Roman", Times, serif;
+    color: black;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    font-size: 17px;
+    margin: 30px;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    cursor: pointer;
+    letter-spacing: 2px;
+    border-bottom: solid 1px black;
+}
+
+p {
+    font-size: 20px;
+}
+
+input {
+    font-size: 15px;
+}
+
+.infoPetition {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
+
+.editForm {
+    display: flex;
+    flex-direction: column;
+}
+
+ul li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    font-size: 17px;
+    margin: 20px;
+}
+
+#signature {
+    cursor: url(https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/32/Pencil-icon.png)
+            0 20,
+        progress;
+
+    background: radial-gradient(white 0%, #758bb88e 100%);
+    border-radius: 15px;
+    border: 3px rgb(38, 51, 111) solid;
+}
+
+div.bg {
+    position: absolute;
+    width: 0.01vmin;
+    height: 0.01vmin;
+    border-radius: 50%;
+    opacity: 0.2;
+    filter: blur(10px);
+}
+div.bg:nth-child(2) {
+    box-shadow: 0 0 45vmax 45vmax #f0f;
+    animation: hue 5s 0s linear infinite, move1 10s 0s linear infinite;
+}
+div.bg:nth-child(3) {
+    box-shadow: 0 0 45vmax 45vmax rgba(0, 0, 0, 0.5);
+    animation: hue 10s 0s linear infinite, move2 15s 0s linear infinite;
+}
+div.bg:nth-child(4) {
+    box-shadow: 0 0 70vmax 45vmax #0ff;
+    animation: hue 15s 0s linear infinite, move3 20s 0s linear infinite;
+    opacity: 0.2;
+}
+@keyframes hue {
+    100% {
+        filter: hue-rotate(360deg);
+    }
+}
+@keyframes move1 {
+    0% {
+        top: 0%;
+        left: 50%;
+    }
+    25% {
+        left: 20%;
+    }
+    50% {
+        top: 100%;
+    }
+    75% {
+        left: 100%;
+    }
+    100% {
+        top: 0%;
+        left: 50%;
+    }
+}
+@keyframes move2 {
+    0% {
+        top: 50%;
+        left: 100%;
+    }
+    25% {
+        top: 100%;
+    }
+    50% {
+        left: 0%;
+    }
+    75% {
+        top: 0%;
+    }
+    100% {
+        top: 50%;
+        left: 100%;
+    }
+}
+@keyframes move3 {
+    0% {
+        top: 100%;
+        left: 50%;
+    }
+    25% {
+        left: 100%;
+    }
+    50% {
+        top: 0%;
+    }
+    75% {
+        left: 0%;
+    }
+    100% {
+        top: 100%;
+        left: 50%;
+    }
+}

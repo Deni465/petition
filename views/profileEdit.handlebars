@@ -6,38 +6,79 @@
 
 <div>
     {{#usersInfo}}
-    <form class="editForm" action="/profile/edit" method="POST">
-        <label for="first">First Name*</label>
-        <input required id="first" name="first" type="name" value="{{first}}" placeholder="First Name" />
-        
-        <label for="last">Last Name*</label>
-        <input  required value="{{last}}" id="last" name="last" type="name" placeholder="Last Name" />
-        
-        <label for="email">E-Mail*</label>
-        <input  required value="{{email}}" id="email" name="email" type="email" placeholder="E-Mail" />
-        
-        <label for="password">Password</label>
-        <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
-        />
-        <label for="age">Age</label>
-        <input  value="{{age}}" type="number" placeholder="Your Age" id="age" name="age" />
-       
-        <label for="city">City</label>
-        <input  value="{{city}}" type="text" id="city" placeholder="Your City" name="city" />
-       
-        <label for="homepage" >Homepage</label>
-        <input  value="{{homepage}}" type="url" id="homepage" placeholder="http / https" name="homepage" />
+        <form class="editForm" action="/profile/edit" method="POST">
+            <label for="first">First Name*</label>
+            <input
+                required
+                id="first"
+                name="first"
+                type="name"
+                value="{{first}}"
+                placeholder="First Name"
+            />
 
-        <input type="submit" value="Submit">
-        <a href="/signature">Back to the signatures</a>
-    </form>
-     {{/usersInfo}}
+            <label for="last">Last Name*</label>
+            <input
+                required
+                value="{{last}}"
+                id="last"
+                name="last"
+                type="name"
+                placeholder="Last Name"
+            />
+
+            <label for="email">E-Mail*</label>
+            <input
+                required
+                value="{{email}}"
+                id="email"
+                name="email"
+                type="email"
+                placeholder="E-Mail"
+            />
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+            />
+            <label for="age">Age</label>
+            <input
+                value="{{age}}"
+                type="number"
+                placeholder="Your Age"
+                id="age"
+                name="age"
+            />
+
+            <label for="city">City</label>
+            <input
+                value="{{city}}"
+                type="text"
+                id="city"
+                placeholder="Your City"
+                name="city"
+            />
+
+            <label for="homepage">Homepage</label>
+            <input
+                value="{{homepage}}"
+                type="url"
+                id="homepage"
+                placeholder="http / https"
+                name="homepage"
+            />
+            <div class="btn">
+                <input class="btn" type="submit" value="Submit" />
+                <a class="btn" href="/signature">Back to the signatures</a>
+            </div>
+
+        </form>
+    {{/usersInfo}}
 </div>
 
-<p id="error-box"></p>
+<img src="{{directory}}/dinosaurier.png" alt="dino" width="120px" height="120px" style="transform: rotate(45deg);" >
 
 <script src="/validation.js"></script>

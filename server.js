@@ -27,9 +27,13 @@ function isLoggedIn(req, res, next) {
 }
 
 function petitionSigned(req, res, next) {
-    return db.getSignature(req.session.signatureId).then((result) => {
-        if (result.rowCount === 0) {
-            return res.redirect("/petition");
+    // console.log(req.session.signatureId);
+    db.getSignature(req.session.signatureId).then((result) => {
+        // console.log("petition signed", result);
+
+        if (result.rowCount > 0) {
+            // console.log("weiterleitung");
+            return res.redirect("/thank-you");
         }
         next();
     });
@@ -98,12 +102,13 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     db.auth(req.body.email, req.body.password).then((authentication) => {
-        // console.log(crypt);
+        // console.log(authentication.user);
         // req.session new cookie session
         if (authentication.crypt) {
             req.session.id = authentication.user.id;
             req.session.first = authentication.user.first;
             req.session.last = authentication.user.last;
+            req.session.signatureId = authentication.user.user_id;
             res.redirect("/petition");
         } else {
             res.render("login", {
@@ -118,8 +123,11 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/logout", isLoggedIn, (req, res) => {
-    req.session = 0;
-    res.redirect("/register");
+    req.session.id = false;
+    req.session.first = false;
+    req.session.last = false;
+    console.log("Logged out");
+    res.redirect("/login");
 });
 
 app.get("/profile", isLoggedIn, petitionSigned, (req, res) => {
@@ -134,7 +142,7 @@ app.get("/profile", isLoggedIn, petitionSigned, (req, res) => {
 // renders form to input my profile info!
 
 app.post("/profile", isLoggedIn, petitionSigned, (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     db.createProfile(
         req.body.age,
         req.body.city,
@@ -156,20 +164,20 @@ app.post("/profile", isLoggedIn, petitionSigned, (req, res) => {
 // validate: homepage must be a valid URL // must start with https or http
 // save form data into database
 
-app.get("/petition", isLoggedIn, (req, res) => {
+app.get("/petition", isLoggedIn, petitionSigned, (req, res) => {
     res.render("home", {
         title: "Petition",
     });
-    console.log(req.session.id);
+    // console.log(req.session.id);
 });
 
 app.post("/petition", isLoggedIn, (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     if (req.session.id) {
         db.createSignature(req.body.signature, req.session.id)
             .then((data) => {
-                console.log({ data });
-                req.session.signatureId = data[0].id;
+                // console.log({ data });
+                req.session.signatureId = data[0].user_id;
                 res.redirect("/thank-you");
             })
             .catch((err) => {
@@ -177,14 +185,17 @@ app.post("/petition", isLoggedIn, (req, res) => {
             });
     }
 
-    console.log("Here is the signature", req.body.signature);
+    // console.log("Here is the signature", req.body.signature);
     // TODO: safe signature img in database
 });
 
-app.get("/thank-you", isLoggedIn, petitionSigned, (req, res) => {
+app.get("/thank-you", isLoggedIn, (req, res) => {
+    // console.log(req.session.signatureId);
     db.getAllSignatures().then((rows) => {
-        console.log(rows);
-        const newSig = rows.find((row) => row.id === req.session.signatureId);
+        // console.log(rows);
+        const newSig = rows.find(
+            (row) => row.user_id === req.session.signatureId
+        );
         if (newSig) {
             res.render("thank-you", {
                 title: "Petition",
@@ -197,9 +208,9 @@ app.get("/thank-you", isLoggedIn, petitionSigned, (req, res) => {
     });
 });
 
-app.get("/signature", isLoggedIn, petitionSigned, (req, res) => {
+app.get("/signature", isLoggedIn, (req, res) => {
     db.getAllUser().then((rows) => {
-        console.log(rows);
+        // console.log(rows);
         res.render("signature", {
             title: "Petition",
             users: rows,
@@ -209,7 +220,7 @@ app.get("/signature", isLoggedIn, petitionSigned, (req, res) => {
 
 app.get("/signature/:city", isLoggedIn, (req, res) => {
     db.getAllSignersByCity(req.params.city).then((rows) => {
-        console.log(rows);
+        // console.log(rows);
         res.render("signaturePerCity", {
             title: "Petition",
             users: rows,
@@ -222,7 +233,7 @@ app.get("/signature/:city", isLoggedIn, (req, res) => {
 
 app.get("/profile/edit", isLoggedIn, (req, res) => {
     db.getUserInfo(req.session.id).then((rows) => {
-        console.log("Result info user", rows);
+        // console.log("Result info user", rows);
         // console.log("YAY, edit works");
         res.render("profileEdit", {
             title: "Edit your profile",
@@ -258,7 +269,7 @@ app.post("/profile/edit", isLoggedIn, (req, res) => {
 
     userUpdatePromise
         .then(() => {
-            console.log("1");
+            // console.log("1");
             return db.upsertUserProfileData(
                 age,
                 city,
@@ -270,7 +281,7 @@ app.post("/profile/edit", isLoggedIn, (req, res) => {
             res.redirect("/profile/edit");
         })
         .catch((err) => {
-            console.log(err);
+            console.log("error in editing profile", err);
         });
 });
 // validation: user must be signed in
@@ -292,8 +303,9 @@ app.post("/profile/edit", isLoggedIn, (req, res) => {
 
 app.post("/signature/delete", isLoggedIn, (req, res) => {
     db.deleteSignature(req.session.signatureId).then((rows) => {
+        req.session.signatureId = null;
         res.redirect("/petition");
-        console.log();
+        console.log("Signature deleted");
     });
 });
 // validation: user signed in, (user has signed)

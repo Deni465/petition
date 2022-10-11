@@ -22,7 +22,8 @@ module.exports.getAllUser = function () {
 };
 
 module.exports.getUserByEmail = function (email) {
-    const sql = "SELECT * FROM users WHERE email = $1";
+    const sql =
+        "SELECT first, last, users.id, user_id, password FROM users LEFT JOIN signatures ON users.id = signatures.user_id WHERE email = $1";
     return db.query(sql, [email]);
 };
 
@@ -60,7 +61,7 @@ module.exports.createSignature = (signature, user_id) => {
     const sql = `
     INSERT INTO signatures (signature, user_id)
     VALUES ($1, $2)
-    Returning id;
+    RETURNING user_id;
     `;
     return db
         .query(sql, [signature, user_id])
@@ -68,12 +69,14 @@ module.exports.createSignature = (signature, user_id) => {
         .catch((error) => console.log("error inserting signature", error));
 };
 
-module.exports.getSignature = (id) => {
-    const sql = "SELECT signature FROM signatures WHERE id=$1";
+module.exports.getSignature = (user_id) => {
+    // console.log("getSig user_id", user_id);
+    const sql = "SELECT signature FROM signatures WHERE user_id=$1;";
     return db
-        .query(sql, [id])
+        .query(sql, [user_id])
         .then((result) => {
-            return result.rows;
+            // console.log("db.js getSignature", result);
+            return result;
         })
         .catch((error) => {
             console.log("error selecting signature", error);
@@ -127,7 +130,7 @@ module.exports.getUserInfo = (id) => {
     return db
         .query(sql, [id])
         .then((result) => {
-            console.log("db result", result);
+            // console.log("db result", result);
             return result.rows;
         })
         .catch((error) => console.log("error in getting user info", error));
@@ -179,7 +182,7 @@ module.exports.upsertUserProfileData = (age, city, homepage, user_id) => {
 };
 
 module.exports.deleteSignature = (user_id) => {
-    const sql = `DELETE FROM signatures WHERE signatures.id = $1;`;
+    const sql = `DELETE FROM signatures WHERE signatures.user_id = $1;`;
     return db
         .query(sql, [user_id])
         .then((result) => result.rows)

@@ -23,17 +23,21 @@ module.exports.getAllUser = function () {
 
 module.exports.getUserByEmail = function (email) {
     const sql =
-        "SELECT first, last, users.id, user_id, password FROM users LEFT JOIN signatures ON users.id = signatures.user_id WHERE email = $1";
+        "SELECT users.first, users.last, users.id, signatures.user_id, password FROM users LEFT JOIN signatures ON users.id = signatures.user_id WHERE email = $1";
     return db.query(sql, [email]);
 };
 
 module.exports.auth = function (email, password) {
     return this.getUserByEmail(email).then((result) => {
-        return bcrypt
-            .compare(password, result.rows[0].password)
-            .then((crypt) => {
-                return { crypt, user: result.rows[0] };
-            });
+        if (result.rows[0]) {
+            return bcrypt
+                .compare(password, result.rows[0].password)
+                .then((crypt) => {
+                    return { crypt, user: result.rows[0] };
+                });
+        } else {
+            return { crypt: false };
+        }
     });
 };
 

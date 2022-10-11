@@ -123,14 +123,11 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/logout", isLoggedIn, (req, res) => {
-    req.session.id = false;
-    req.session.first = false;
-    req.session.last = false;
-    console.log("Logged out");
+    req.session = null;
     res.redirect("/login");
 });
 
-app.get("/profile", isLoggedIn, petitionSigned, (req, res) => {
+app.get("/profile", isLoggedIn, (req, res) => {
     console.log("Yes, profile is there!");
     res.render("profile", {
         title: "Petition",
@@ -141,10 +138,10 @@ app.get("/profile", isLoggedIn, petitionSigned, (req, res) => {
 // check if user has already a profile
 // renders form to input my profile info!
 
-app.post("/profile", isLoggedIn, petitionSigned, (req, res) => {
+app.post("/profile", isLoggedIn, (req, res) => {
     // console.log(req.body);
-    db.createProfile(
-        req.body.age,
+    db.upsertUserProfileData(
+        req.body.age || 0,
         req.body.city,
         req.body.homepage,
         req.session.id

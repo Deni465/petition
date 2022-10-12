@@ -4,6 +4,7 @@ const errorBox = document.getElementById("error-box");
 const firstInput = document.getElementById("first");
 const lastInput = document.getElementById("last");
 const emailInput = document.getElementById("email");
+const ageInput = document.getElementById("age");
 
 if (cityInput) {
     cityInput.addEventListener("input", (event) => {
@@ -81,5 +82,18 @@ if (emailInput) {
             return;
         }
         errorBox.innerText = "Please insert a valid email";
+    });
+}
+
+if (ageInput) {
+    ageInput.addEventListener("input", (event) => {
+        const ageRegEx = /^\d{0,3}$/;
+        const value = event.target.value;
+        if (value.match(ageRegEx)) {
+            errorBox.innerText = "";
+            return;
+        }
+        errorBox.innerText =
+            "Nobody is older than Jeanne Calment of France, who reached the age of 122 years and 164 days 😄";
     });
 }
